@@ -21,7 +21,7 @@ ENV JENKINS_VERSION 2.426.1
 RUN wget https://get.jenkins.io/war-stable/${JENKINS_VERSION}/jenkins.war
 
 # Expose Jenkins port
-EXPOSE 8080
+EXPOSE 8000
 
 # Set user
 USER jenkins
