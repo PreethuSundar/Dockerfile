@@ -1,30 +1,27 @@
-# Use Ubuntu as the base image
-FROM ubuntu:20.04
+# Use the official Jenkins LTS image
+FROM jenkins/jenkins:lts
 
-# Set environment variables to skip interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# Switch to root to install tools
+USER root
 
-# Install Java, wget, and other dependencies
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk wget git curl gnupg && \
-    apt-get clean
+# Install basic packages (optional)
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    sudo \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create a Jenkins user
-RUN useradd -m -d /home/jenkins jenkins
+# Create a user with sudo privileges (optional)
+RUN adduser --disabled-password --gecos "" jenkins_user && \
+    echo "jenkins_user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Set working directory
-WORKDIR /opt/jenkins
-
-# Download Jenkins WAR file (latest LTS or specific version)
-ENV JENKINS_VERSION 2.426.1
-
-RUN wget https://get.jenkins.io/war-stable/${JENKINS_VERSION}/jenkins.war
-
-# Expose Jenkins port
-EXPOSE 8080
-
-# Set user
+# Switch back to Jenkins user
 USER jenkins
 
-# Set entrypoint to run Jenkins
-CMD ["java", "-jar", "/opt/jenkins/jenkins.war"]  how to build image using this detail steps in jenkins
+# Expose default port
+EXPOSE 8080
+EXPOSE 50000
+
+# Default command (already defined by base image)
+# CMD ["bash", "-c", "/usr/bin/java -jar /usr/share/jenkins/jenkins.war"]
